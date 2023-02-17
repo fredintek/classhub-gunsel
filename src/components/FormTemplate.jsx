@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,24 +9,224 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import StdBox from "./StdBox";
-import { useSelector } from "react-redux";
-import { selectClassHub } from "../redux/slices/classHub";
-import { selectStudentData } from "../redux/slices/student";
-import { selectCourseData } from "../redux/slices/courses";
+import axios from "axios";
+import { selectStdBox, setStdBox } from "../redux/slices/courses";
 
 const FormTemplate = ({ title, update }) => {
-  const [showStd, setShowStd] = useState(false);
+  const navigator = useNavigate();
+  const dispatch = useDispatch();
+  const [classData, setClassData] = useState([]);
+  const [studentData, setStudentData] = useState([]);
+  const [courseData, setCourseData] = useState([]);
+
+  // GET DATA FROM PREV PAGE
   const location = useLocation();
   const data = location.state;
-  const stdId = data.data.Students?.map(item => item.id)
-  const studentData = useSelector(selectStudentData);
-  const courseData = useSelector(selectCourseData);
 
+  // FORM STATES
+  const [classname, setClassName] = useState(null);
+  const [firstname, setFirstName] = useState(null);
+  const [lastname, setLastName] = useState(null);
+  const [coursename, setCourseName] = useState(null);
+  const [age, setAge] = useState(null);
+  const [selectClass, setSelectClass] = useState(null);
+  const selectCourseIds = useSelector(selectStdBox);
 
-  
+  useEffect(() => {
+    setClassData(JSON.parse(localStorage.getItem("classData")));
+    setCourseData(JSON.parse(localStorage.getItem("courseData")));
+    setStudentData(JSON.parse(localStorage.getItem("studentsData")));
+
+    if (update === "students" && title === "Student") {
+      setFirstName(data.data.firstname);
+      setLastName(data.data.lastname);
+      setSelectClass(data.data.class);
+      setAge(data.data.age);
+    }
+  }, []);
+
+  useEffect(() => {
+    let arr = [];
+    if (update === "students" && title === "Student") {
+      // console.log(courseData);
+      courseData.forEach((item) => {
+        if (data.data.course.includes(item.coursename)) {
+          arr.push(item.id);
+        }
+      });
+    }
+    dispatch(setStdBox(arr));
+  }, [courseData]);
+
+  const [showStd, setShowStd] = useState(false);
+
+  // console.log(data.data);
+  // console.log(courseData)
+  const stdId = data.data.Students?.map((item) => item.id);
+
+  // console.log(firstname);
+  // console.log(lastname);
+  // console.log(age);
+  // console.log(selectClass);
+  // console.log(selectCourseIds)
+  // console.log(coursename)
+
+  const config = {
+    headers: { "content-type": "multipart/form-data" },
+  };
+  const handleAddUpdateForm = async (e) => {
+    e.preventDefault();
+    if (!update && title === "Class") {
+      const url = "http://10.80.1.92:5000/classes";
+      const data = {
+        classname: classname,
+      };
+
+      axios
+        .post(url, data)
+        .then((response) => {
+          // console.log(response);
+          window.location.reload();
+          document.getElementById("classHub-form").reset();
+          navigator(-1);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      // for (const value of formData.values()) {
+      //   console.log(value);
+      // }
+    }
+
+    if (update === "classHub" && title === "Class") {
+      const url = `http://10.80.1.92:5000/classes/${data.data.id}`;
+      const formData = {
+        classname: classname,
+      };
+
+      axios
+        .put(url, formData)
+        .then((response) => {
+          // console.log(response);
+          window.location.reload();
+          document.getElementById("classHub-form").reset();
+          navigator(-1);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    if (!update && title === "Student") {
+      const url = "http://10.80.1.92:5000/students";
+      const data = {
+        firstname,
+        lastname,
+        age,
+        classname: selectClass,
+        coursename: selectCourseIds,
+      };
+
+      axios
+        .post(url, data)
+        .then((response) => {
+          // console.log(response);
+          window.location.reload();
+          document.getElementById("classHub-form").reset();
+          navigator(-1);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      // for (const value of formData.values()) {
+      //   console.log(value);
+      // }
+    }
+
+    if (update === "students" && title === "Student") {
+      console.log(data.data.id);
+      const url = `http://10.80.1.92:5000/students/${data.data.id}`;
+      const formData = {
+        firstname,
+        lastname,
+        age,
+        classname: selectClass,
+        coursename: selectCourseIds,
+      };
+
+      axios
+        .put(url, formData)
+        .then((response) => {
+          // console.log(response);
+          window.location.reload();
+          document.getElementById("classHub-form").reset();
+          navigator(-1);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      // for (const value of formData.values()) {
+      //   console.log(value);
+      // }
+    }
+
+    if (!update && title === "Course") {
+      const url = "http://10.80.1.92:5000/courses";
+      const formData = {
+        coursename
+      };
+
+      axios
+        .post(url, formData)
+        .then((response) => {
+          // console.log(response);
+          window.location.reload();
+          document.getElementById("classHub-form").reset();
+          navigator(-1);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      // for (const value of formData.values()) {
+      //   console.log(value);
+      // }
+    }
+
+    if (update === "courses" && title === "Course") {
+      const url = `http://10.80.1.92:5000/courses/${data.data.id}`;
+      const formData = {
+        coursename,
+      };
+
+      axios
+        .put(url, formData)
+        .then((response) => {
+          // console.log(response);
+          window.location.reload();
+          document.getElementById("classHub-form").reset();
+          navigator(-1);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      // for (const value of formData.values()) {
+      //   console.log(value);
+      // }
+    }
+  };
 
   return (
-    <form className="bg-white shadow-myshadow max-w-2xl mx-auto flex flex-col gap-y-10 rounded-md p-5">
+    <form
+      id="classHub-form"
+      encType="multipart/form-data"
+      onSubmit={handleAddUpdateForm}
+      className="bg-white shadow-myshadow max-w-2xl mx-auto flex flex-col gap-y-10 rounded-md p-5"
+    >
       <h1 className="text-3xl text-center text-dark-purple">
         {update
           ? update === "classHub"
@@ -49,8 +250,9 @@ const FormTemplate = ({ title, update }) => {
             <input
               className="border border-gray-300 rounded-md p-1 outline-none"
               type="text"
-              name=""
+              name="classname"
               id=""
+              onChange={(e) => setClassName(e.target.value)}
               placeholder={`${data.data.class || "Enter new classname"}`}
             />
           </>
@@ -58,6 +260,7 @@ const FormTemplate = ({ title, update }) => {
           <>
             {" "}
             <input
+              onChange={(e) => setCourseName(e.target.value)}
               className="border border-gray-300 rounded-md p-1 outline-none"
               type="text"
               name=""
@@ -78,6 +281,7 @@ const FormTemplate = ({ title, update }) => {
                   Firstname
                 </label>
                 <input
+                  onChange={(e) => setFirstName(e.target.value)}
                   className="border border-gray-300 rounded-md p-1 outline-none"
                   type="text"
                   name=""
@@ -93,6 +297,7 @@ const FormTemplate = ({ title, update }) => {
                   Lastname
                 </label>
                 <input
+                  onChange={(e) => setLastName(e.target.value)}
                   className="border border-gray-300 rounded-md p-1 outline-none"
                   type="text"
                   name=""
@@ -128,13 +333,14 @@ const FormTemplate = ({ title, update }) => {
               {update
                 ? courseData.map((item, idx) => (
                     <StdBox
+                      data={item}
                       name={item.coursename}
                       key={idx}
                       updated={data.data.course.includes(item.coursename)}
                     />
                   ))
                 : courseData.map((item, idx) => (
-                    <StdBox name={item.coursename} key={idx} />
+                    <StdBox data={item} name={item.coursename} key={idx} />
                   ))}
             </div>
           </div>
@@ -149,6 +355,7 @@ const FormTemplate = ({ title, update }) => {
               <span className="text-[10px] ml-2 text-red-400">(16-30)</span>
             </label>
             <input
+              onChange={(e) => setAge(e.target.value)}
               className="border border-gray-300 rounded-md p-1 outline-none"
               type="number"
               min={16}
@@ -164,23 +371,24 @@ const FormTemplate = ({ title, update }) => {
               Class
             </label>
             <select
-              defaultValue={"Select Class"}
+              onChange={(e) => setSelectClass(e.target.value)}
+              defaultValue={"select class"}
               className="border border-gray-300 rounded-md p-1 outline-none cursor-pointer"
               name=""
               id=""
             >
               <option value="select class">Select Class</option>
-
-              <option value="class a">Class A</option>
-              <option value="class b">Class B</option>
-              <option value="class c">Class C</option>
-              <option value="class d">Class D</option>
+              {classData.map((item) => (
+                <option key={item.id} value={item.class}>
+                  {item.class}
+                </option>
+              ))}
             </select>
           </div>
         </div>
       )}
 
-      {title === "Student" && (
+      {/* {title === "Student" && (
         <div className="flex flex-col gap-y-2">
           <div className="font-bold">
             Profile Picture{" "}
@@ -200,9 +408,9 @@ const FormTemplate = ({ title, update }) => {
             accept="image/*"
           />
         </div>
-      )}
+      )} */}
 
-      {title === "Course" && (
+      {/* {title === "Course" && (
         <div className="flex flex-col gap-y-2">
           <label className="font-bold" htmlFor="">
             Students
@@ -239,7 +447,7 @@ const FormTemplate = ({ title, update }) => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       <motion.button
         whileTap={{ scale: 0.8 }}
