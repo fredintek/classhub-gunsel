@@ -1,25 +1,23 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BodyHeader, DisplayCard, Navbar, Sidebar } from "../components";
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
 import { addCourseData, selectCourseData } from "../redux/slices/courses";
 
 const Courses = () => {
-  const dispatch = useDispatch()
-  const getCourseData = useSelector(selectCourseData)
-
   useEffect(() => {
     axios
-      .get("http://10.80.1.92:5000/courses")
+      .get("http://localhost:9000/api/v1/course/")
       .then((res) => {
-        dispatch(addCourseData(res.data));
+        dispatch(addCourseData(res.data.data));
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
 
-
+  const dispatch = useDispatch();
+  const getCourseData = useSelector(selectCourseData);
 
   return (
     <div className="flex min-h-screen">

@@ -3,14 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUpload,
-  faCaretDown,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import StdBox from "./StdBox";
 import axios from "axios";
 import { selectStdBox, setStdBox } from "../redux/slices/courses";
+import { toast } from "react-toastify";
 
 const FormTemplate = ({ title, update }) => {
   const navigator = useNavigate();
@@ -43,14 +40,15 @@ const FormTemplate = ({ title, update }) => {
       setSelectClass(data.data.class);
       setAge(data.data.age);
     }
-  }, []);
+  }, [title]);
 
   useEffect(() => {
     let arr = [];
     if (update === "students" && title === "Student") {
-      // console.log(courseData);
       courseData.forEach((item) => {
-        if (data.data.course.includes(item.coursename)) {
+        if (
+          data.data.courses.find((obj) => obj.coursename === item.coursename)
+        ) {
           arr.push(item.id);
         }
       });
@@ -60,24 +58,13 @@ const FormTemplate = ({ title, update }) => {
 
   const [showStd, setShowStd] = useState(false);
 
-  // console.log(data.data);
-  // console.log(courseData)
-  const stdId = data.data.Students?.map((item) => item.id);
-
-  // console.log(firstname);
-  // console.log(lastname);
-  // console.log(age);
-  // console.log(selectClass);
-  // console.log(selectCourseIds)
-  // console.log(coursename)
-
   const config = {
     headers: { "content-type": "multipart/form-data" },
   };
   const handleAddUpdateForm = async (e) => {
     e.preventDefault();
     if (!update && title === "Class") {
-      const url = "http://10.80.1.92:5000/classes";
+      const url = "http://localhost:9000/api/v1/class/";
       const data = {
         classname: classname,
       };
@@ -85,41 +72,33 @@ const FormTemplate = ({ title, update }) => {
       axios
         .post(url, data)
         .then((response) => {
-          // console.log(response);
-          window.location.reload();
-          document.getElementById("classHub-form").reset();
           navigator(-1);
+          toast.success(response.data.message);
         })
         .catch((error) => {
-          console.log(error);
+          toast.error(error.response.data.message);
         });
-
-      // for (const value of formData.values()) {
-      //   console.log(value);
-      // }
     }
 
     if (update === "classHub" && title === "Class") {
-      const url = `http://10.80.1.92:5000/classes/${data.data.id}`;
+      const url = `http://localhost:9000/api/v1/class/${data.data.id}`;
       const formData = {
         classname: classname,
       };
 
       axios
-        .put(url, formData)
+        .patch(url, formData)
         .then((response) => {
-          // console.log(response);
-          window.location.reload();
-          document.getElementById("classHub-form").reset();
           navigator(-1);
+          toast.success(response.data.message);
         })
         .catch((error) => {
-          console.log(error);
+          toast.error(error.response.data.message);
         });
     }
 
     if (!update && title === "Student") {
-      const url = "http://10.80.1.92:5000/students";
+      const url = "http://localhost:9000/api/v1/student/";
       const data = {
         firstname,
         lastname,
@@ -131,23 +110,16 @@ const FormTemplate = ({ title, update }) => {
       axios
         .post(url, data)
         .then((response) => {
-          // console.log(response);
-          window.location.reload();
-          document.getElementById("classHub-form").reset();
           navigator(-1);
+          toast.success(response.data.message);
         })
         .catch((error) => {
-          console.log(error);
+          toast.error(error.response.data.message);
         });
-
-      // for (const value of formData.values()) {
-      //   console.log(value);
-      // }
     }
 
     if (update === "students" && title === "Student") {
-      console.log(data.data.id);
-      const url = `http://10.80.1.92:5000/students/${data.data.id}`;
+      const url = `http://localhost:9000/api/v1/student/${data.data.id}`;
       const formData = {
         firstname,
         lastname,
@@ -157,66 +129,49 @@ const FormTemplate = ({ title, update }) => {
       };
 
       axios
-        .put(url, formData)
+        .patch(url, formData)
         .then((response) => {
-          // console.log(response);
-          window.location.reload();
-          document.getElementById("classHub-form").reset();
           navigator(-1);
+          toast.success(response.data.message);
         })
         .catch((error) => {
-          console.log(error);
+          toast.error(error.response.data.message);
         });
-
-      // for (const value of formData.values()) {
-      //   console.log(value);
-      // }
     }
 
     if (!update && title === "Course") {
-      const url = "http://10.80.1.92:5000/courses";
-      const formData = {
-        coursename
-      };
-
-      axios
-        .post(url, formData)
-        .then((response) => {
-          // console.log(response);
-          window.location.reload();
-          document.getElementById("classHub-form").reset();
-          navigator(-1);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      // for (const value of formData.values()) {
-      //   console.log(value);
-      // }
-    }
-
-    if (update === "courses" && title === "Course") {
-      const url = `http://10.80.1.92:5000/courses/${data.data.id}`;
+      const url = `http://localhost:9000/api/v1/course/`;
       const formData = {
         coursename,
       };
 
       axios
-        .put(url, formData)
+        .post(url, formData)
         .then((response) => {
-          // console.log(response);
-          window.location.reload();
-          document.getElementById("classHub-form").reset();
+          console.log(response);
           navigator(-1);
+          toast.success(response.data.message);
         })
         .catch((error) => {
-          console.log(error);
+          toast.error(error.response.data.message);
         });
+    }
 
-      // for (const value of formData.values()) {
-      //   console.log(value);
-      // }
+    if (update === "courses" && title === "Course") {
+      const url = `http://localhost:9000/api/v1/course/${data.data.id}`;
+      const formData = {
+        coursename,
+      };
+
+      axios
+        .patch(url, formData)
+        .then((response) => {
+          navigator(-1);
+          toast.success(response.data.message);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
     }
   };
 
@@ -253,7 +208,7 @@ const FormTemplate = ({ title, update }) => {
               name="classname"
               id=""
               onChange={(e) => setClassName(e.target.value)}
-              placeholder={`${data.data.class || "Enter new classname"}`}
+              placeholder={`${data.data.classname || "Enter new classname"}`}
             />
           </>
         ) : title !== "Student" ? (
@@ -336,7 +291,9 @@ const FormTemplate = ({ title, update }) => {
                       data={item}
                       name={item.coursename}
                       key={idx}
-                      updated={data.data.course.includes(item.coursename)}
+                      updated={data.data.courses.find(
+                        (obj) => obj.coursename === item.coursename
+                      )}
                     />
                   ))
                 : courseData.map((item, idx) => (
@@ -379,8 +336,8 @@ const FormTemplate = ({ title, update }) => {
             >
               <option value="select class">Select Class</option>
               {classData.map((item) => (
-                <option key={item.id} value={item.class}>
-                  {item.class}
+                <option key={item.id} value={item.classname}>
+                  {item.classname}
                 </option>
               ))}
             </select>
@@ -407,45 +364,6 @@ const FormTemplate = ({ title, update }) => {
             id="student-image"
             accept="image/*"
           />
-        </div>
-      )} */}
-
-      {/* {title === "Course" && (
-        <div className="flex flex-col gap-y-2">
-          <label className="font-bold" htmlFor="">
-            Students
-          </label>
-          <div className="h-max flex flex-col gap-y-2">
-            <div
-              onClick={() => setShowStd(!showStd)}
-              className="cursor border border-gray-300 rounded-md p-1 flex items-center justify-between"
-            >
-              <p className="text-gray-400">Choose from available students</p>
-              <FontAwesomeIcon icon={faCaretDown} className="text-gray-700" />
-            </div>
-            <div
-              className={`${
-                showStd ? "scale-100" : "scale-0 hidden"
-              } origin-top border border-gray-300 rounded-md p-1 flex flex-wrap gap-3`}
-            >
-              {update
-                ? studentData.map((student, idx) => (
-                    <StdBox
-                      key={idx}
-                      name={student.firstname}
-                      lastname={student.lastname}
-                      updated={stdId.includes(student.id)}
-                    />
-                  ))
-                : studentData.map((student, idx) => (
-                    <StdBox
-                      key={idx}
-                      name={student.firstname}
-                      lastname={student.lastname}
-                    />
-                  ))}
-            </div>
-          </div>
         </div>
       )} */}
 

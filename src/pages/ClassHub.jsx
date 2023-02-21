@@ -5,21 +5,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { addClassHub, selectClassHub } from "../redux/slices/classHub";
 
 const ClassHub = () => {
-  const dispatch = useDispatch()
-  const getClassHub = useSelector(selectClassHub)
-
   useEffect(() => {
     axios
-      .get("http://10.80.1.92:5000/classes")
+      .get("http://localhost:9000/api/v1/class/")
       .then((res) => {
-        dispatch(addClassHub(res.data));
+        dispatch(addClassHub(res.data.data));
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
-
-  // console.log(classData)
+  const dispatch = useDispatch();
+  const getClassHub = useSelector(selectClassHub);
 
   return (
     <div className="flex min-h-screen">

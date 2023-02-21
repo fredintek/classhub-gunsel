@@ -4,19 +4,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const DisplayCard = ({ type, update, title, data }) => {
   const [url, setUrl] = useState(() => {
-    if (title === "Class") return "http://10.80.1.92:5000/classes/";
-    if (title === "Course") return "http://10.80.1.92:5000/courses/";
-    if (title === "Student") return "http://10.80.1.92:5000/students/";
+    if (title === "Class") return "http://localhost:9000/api/v1/class/";
+    if (title === "Course") return "http://localhost:9000/api/v1/course/";
+    if (title === "Student") return "http://localhost:9000/api/v1/student/";
   });
   const [cardMenu, setCardMenu] = useState(false);
   const navigate = useNavigate();
 
   const popupRef = useRef();
-
-  // console.log(data)
 
   useEffect(() => {
     const closePopup = (e) => {
@@ -44,14 +43,13 @@ const DisplayCard = ({ type, update, title, data }) => {
   };
 
   const handleDeleteCard = () => {
-    console.log(data.id);
     axios
       .delete(url + `${data.id}`)
       .then((response) => {
-        console.log(response);
+        toast.success(response.data.message);
         window.location.reload();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => toast.error(err.response.data.message));
   };
 
   return (
@@ -108,7 +106,9 @@ const DisplayCard = ({ type, update, title, data }) => {
             </div>
           </>
         )}
-        {type === "classHub" && <p className="text-xl">Class: {data?.class}</p>}
+        {type === "classHub" && (
+          <p className="text-xl">Class: {data?.classname}</p>
+        )}
         {type === "course" && <p className="text-xl">{data?.coursename}</p>}
       </div>
 
@@ -116,9 +116,9 @@ const DisplayCard = ({ type, update, title, data }) => {
       <div className="mt-2 flex items-center flex-[0.4] justify-center gap-x-3">
         <div className="flex flex-col gap-y-1 items-center">
           <span className="border-2 border-dark-purple w-9 h-9 rounded-full grid place-items-center">
-            {type === "student" && data.course.length}
+            {type === "student" && data.courses.length}
             {type === "classHub" && data.students.length}
-            {type === "course" && data.Students.length}
+            {type === "course" && data.students.length}
           </span>
 
           {type === "student" && <p className="text-[10px]">Courses</p>}
@@ -142,7 +142,7 @@ const DisplayCard = ({ type, update, title, data }) => {
         whileTap={{ scale: 0.8 }}
         className="mt-2 p-2 bg-dark-purple text-white text-center rounded-md cursor-pointer"
       >
-        {type === "classHub" && "View All Students"}
+        {type === "classHub" && "View Class"}
         {type === "course" && "View All Students"}
         {type === "student" && "View Details"}
       </motion.div>

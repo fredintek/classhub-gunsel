@@ -6,21 +6,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { addStudentData, selectStudentData } from "../redux/slices/student";
 
 const Students = () => {
-  const dispatch = useDispatch()
-  const getStudentData = useSelector(selectStudentData)
-
   useEffect(() => {
     axios
-      .get("http://10.80.1.92:5000/students")
+      .get("http://localhost:9000/api/v1/student/")
       .then((res) => {
-        dispatch(addStudentData(res.data))
+        dispatch(addStudentData(res.data.data));
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [])
-
-  // console.log(students)
+  }, []);
+  
+  const dispatch = useDispatch();
+  const getStudentData = useSelector(selectStudentData);
 
   return (
     <div className="flex min-h-screen">

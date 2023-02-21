@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Control from "./../../assets/control.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,10 +6,8 @@ import { faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import { faSchool } from "@fortawesome/free-solid-svg-icons";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
-import { useDispatch } from "react-redux";
 
 const Sidebar = () => {
-  const dispatch = useDispatch();
   const [openSideBar, setSideBar] = useState(true);
   const navigate = useNavigate();
   const Menus = [

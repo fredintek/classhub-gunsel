@@ -7,21 +7,22 @@ import axios from "axios";
 
 const BodyHeader = ({ type, title }) => {
   const [queryStr, setQueryStr] = useState(() => {
-    if (title === "Class") return "classes";
-    if (title === "Student") return "students";
-    if (title === "Course") return "courses";
+    if (title === "Class") return "class";
+    if (title === "Student") return "student";
+    if (title === "Course") return "course";
   });
 
   const [data, setData] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get(`http://10.80.1.92:5000/${queryStr}`);
-      setData(res.data)
+      const res = await axios.get(`http://localhost:9000/api/v1/${queryStr}/`);
+      setData(res.data.data)
     };
 
     fetchData();
   }, [queryStr]);
+
 
   const navigate = useNavigate();
   const handleBodyHeadClick = () => {
