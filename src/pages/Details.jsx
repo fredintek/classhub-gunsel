@@ -27,10 +27,9 @@ const Details = () => {
   const [showStd, setShowStd] = useState(false);
   const [stdID, setStdID] = useState([]);
   const [className, setClassName] = useState("");
-
   const getClassName = async (id) => {
     const classAttr = await axios.get(
-      `http://localhost:9000/api/v1/class/${id}`
+      `/api/class/${id}`
     );
     return classAttr.data.data.classname;
   };
@@ -77,14 +76,14 @@ const Details = () => {
     let url;
     let formData;
     if (location.state.type === "Student") {
-      url = `http://localhost:9000/api/v1/student/addcourse/${studentData.id}`;
+      url = `/api/student/addcourse/${studentData.id}`;
       formData = {
         coursename: stdBox,
       };
     }
 
     if (location.state.type === "Course") {
-      url = `http://localhost:9000/api/v1/course/addstudent/${studentData.id}`;
+      url = `/api/course/addstudent/${studentData.id}`;
       formData = {
         studentsid: stdBox,
       };

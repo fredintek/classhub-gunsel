@@ -8,6 +8,7 @@ import StdBox from "./StdBox";
 import axios from "axios";
 import { selectStdBox, setStdBox } from "../redux/slices/courses";
 import { toast } from "react-toastify";
+import { addClassHub } from "../redux/slices/classHub";
 
 const FormTemplate = ({ title, update }) => {
   const navigator = useNavigate();
@@ -64,24 +65,24 @@ const FormTemplate = ({ title, update }) => {
   const handleAddUpdateForm = async (e) => {
     e.preventDefault();
     if (!update && title === "Class") {
-      const url = "http://localhost:9000/api/v1/class/";
+      const url = "/api/class/";
       const data = {
         classname: classname,
       };
 
       axios
         .post(url, data)
-        .then((response) => {
+        .then((res) => {
           navigator(-1);
-          toast.success(response.data.message);
+          toast.success(res.data.message);
         })
-        .catch((error) => {
-          toast.error(error.response.data.message);
+        .catch((err) => {
+          toast.error(err.response.data.message);
         });
     }
 
     if (update === "classHub" && title === "Class") {
-      const url = `http://localhost:9000/api/v1/class/${data.data.id}`;
+      const url = `/api/class/${data.data.id}`;
       const formData = {
         classname: classname,
       };
@@ -98,7 +99,7 @@ const FormTemplate = ({ title, update }) => {
     }
 
     if (!update && title === "Student") {
-      const url = "http://localhost:9000/api/v1/student/";
+      const url = "/api/student/";
       const data = {
         firstname,
         lastname,
@@ -119,7 +120,7 @@ const FormTemplate = ({ title, update }) => {
     }
 
     if (update === "students" && title === "Student") {
-      const url = `http://localhost:9000/api/v1/student/${data.data.id}`;
+      const url = `/api/student/${data.data.id}`;
       const formData = {
         firstname,
         lastname,
@@ -140,7 +141,7 @@ const FormTemplate = ({ title, update }) => {
     }
 
     if (!update && title === "Course") {
-      const url = `http://localhost:9000/api/v1/course/`;
+      const url = `/api/course/`;
       const formData = {
         coursename,
       };
@@ -148,7 +149,6 @@ const FormTemplate = ({ title, update }) => {
       axios
         .post(url, formData)
         .then((response) => {
-          console.log(response);
           navigator(-1);
           toast.success(response.data.message);
         })
@@ -158,7 +158,7 @@ const FormTemplate = ({ title, update }) => {
     }
 
     if (update === "courses" && title === "Course") {
-      const url = `http://localhost:9000/api/v1/course/${data.data.id}`;
+      const url = `/api/course/${data.data.id}`;
       const formData = {
         coursename,
       };

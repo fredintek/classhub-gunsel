@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const initialState = {
   classHubData: JSON.parse(localStorage.getItem("classData")) || [],
@@ -9,8 +10,8 @@ export const classHubSlice = createSlice({
   initialState,
   reducers: {
     addClassHub: (state, action) => {
-      state.classHubData = action.payload
-    }
+      state.classHubData = action.payload;
+    },
   },
 });
 

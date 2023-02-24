@@ -46,8 +46,8 @@ const DisplayCard = ({ type, update, title, data }) => {
     axios
       .delete(url + `${data.id}`)
       .then((response) => {
-        toast.success(response.data.message);
         window.location.reload();
+        toast.success(response.data.message);
       })
       .catch((err) => toast.error(err.response.data.message));
   };
